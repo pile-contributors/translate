@@ -127,6 +127,8 @@ bool Translate::init (QString * error)
                                  TMP_A(s_dir));
                 continue;
             }
+            s_lang = subdir.absoluteFilePath (s_lang);
+
             if (!s_icon.isEmpty()) {
                 s_icon = subdir.absoluteFilePath (s_icon);
             }

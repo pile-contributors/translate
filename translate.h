@@ -11,22 +11,88 @@
 #define GUARD_TRANSLATE_H_INCLUDE
 
 #include <translate/translate-config.h>
+#include <translate/translang.h>
+#include <QVector>
 
 //! brief description
-class TRANSLATE_EXPORT translate {
+class TRANSLATE_EXPORT Translate {
+
+private:
+
+    //! Default constructor.
+    Translate ();
+
+    //! Destructor.
+    virtual ~Translate();
 
 public:
 
-    //! Default constructor.
-    translate ();
+    //! Initialize the manager.
+    static bool
+    init (
+            QString * error);
 
-    //! Destructor.
-    virtual ~translate();
+    //! Terminate the manager.
+    static void
+    end ();
+
+    //! Get the number of languages we know about.
+    static int
+    count () {
+        if (uniq_ == NULL)
+            return 0;
+        return uniq_->d_.count();
+    }
+
+    //! Get a language at a particular index.
+    static const TransLang &
+    item (
+            int i);
+
+    //! Get a language given its name.
+    static const TransLang &
+    item (
+            const QString & s_name);
+
+    //! Just find the index (-1 if not found).
+    static int
+    itemIndex (
+            const QString & s_name);
+
+    //! Find the index by using the locale instead of name (-1 if not found).
+    static int
+    itemIndexFromLocale (
+            const QString & s_locale);
+
+    //! Tell if an instance is valid or not.
+    static bool
+    validInstance (
+            const TransLang & item);
+
+    //! Create a Qt translator.
+    static QTranslator *
+    translator (
+            int i);
+
+    //! Release cached translator.
+    static void
+    translatorDone (
+            int i);
+
+    //! Index of current translator.
+    static int
+    current ();
+
+    //! Set the index of current translator.
+    static void
+    setCurrent (int value);
 
 protected:
 
 private:
-
+    QVector<TransLang> d_;
+    int current_;
+    static Translate * uniq_;
 };
 
 #endif // GUARD_TRANSLATE_H_INCLUDE

@@ -272,6 +272,18 @@ QTranslator * Translate::translator (int i)
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
+QTranslator * Translate::qtTranslator (int i)
+{
+    if (uniq_ == NULL)
+        return NULL;
+    if ((i < 0) || (i >= uniq_->d_.count())) {
+        return NULL;
+    }
+    return uniq_->d_[i].qtTranslator ();
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
 void Translate::translatorDone (int i)
 {
     if (uniq_ == NULL)

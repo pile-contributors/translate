@@ -67,20 +67,22 @@ macro (internationalizationDirectory)
         unset(contents)
         unset(language_label)
         unset(language_icon)
+        unset(language_locale)
         unset(language_translate)
         unset(language_additional)
         unset(content_parts)
         unset(content_part_1)
         unset(content_part_2)
-        unset (lang_qm_file)
+        unset(lang_qm_file)
         unset(lang_meta_file)
+        unset(lang_files_to_install)
 
         set (lang_meta_file "${CMAKE_CURRENT_SOURCE_DIR}/${lang_dir}/metadata.ini")
         file(READ "${lang_meta_file}" contents)
         string(REGEX REPLACE ";" "\\\\;" contents "${contents}")
         string(REGEX REPLACE "\n" ";" contents "${contents}")
 
-
+        # iterate in file's lines and extract information in variables
         foreach(content_line_iter ${contents})
             string(REGEX REPLACE ";" "\\\\;" content_line "${content_line_iter}")
             unset(content_parts)
@@ -99,8 +101,11 @@ macro (internationalizationDirectory)
                 set(language_icon ${content_part_2} )
             elseif (content_part_1 MATCHES "^translate$")
                 set(language_translate ${content_part_2} )
+            elseif (content_part_1 MATCHES "^locale$")
+                set(language_locale ${content_part_2} )
             elseif (content_part_1 MATCHES "^additional$")
-                string(REGEX REPLACE "\\\\;" ";" language_additional "${content_part_2}")
+                # can't use directly ; as it represents the comment marker in .ini files
+                string(REGEX REPLACE ":" ";" language_additional "${content_part_2}")
             endif()
         endforeach()
 
@@ -111,10 +116,15 @@ macro (internationalizationDirectory)
             set(install_destin "share/locale/${PROJECT_NAME_UNIX}/${lang_dir}")
         endif()
 
-        install(
-            FILES
-                "${lang_meta_file}"
-            DESTINATION ${install_destin})
+        # the translation for Qt for this locale
+        unset(qt_locale_file)
+        file(GLOB qt_locale_file "${PILE_QT_ROOT}/translations/qt_${language_locale}.qm")
+        if (qt_locale_file)
+            list(APPEND lang_files_to_install "${qt_locale_file}")
+        endif()
+
+        # metadata file
+        list(APPEND lang_files_to_install "${lang_meta_file}")
 
         if (language_translate)
             unset(local_ts_file)
@@ -123,23 +133,23 @@ macro (internationalizationDirectory)
             unset(lang_qm_file)
             set(lang_qm_file "${CMAKE_CURRENT_BINARY_DIR}/${language_translate}.qm")
 
-            install(
-                FILES
-                    "${lang_qm_file}"
-                DESTINATION ${install_destin})
+            list(APPEND lang_files_to_install "${lang_qm_file}")
         endif()
+
         if (language_icon)
-            install(
-                FILES
-                    "${CMAKE_CURRENT_SOURCE_DIR}/${lang_dir}/${language_icon}"
-                DESTINATION ${install_destin})
+            list(APPEND lang_files_to_install "${CMAKE_CURRENT_SOURCE_DIR}/${lang_dir}/${language_icon}")
         endif()
+
         foreach(additional ${language_additional})
-            install(
-                FILES
-                    "${CMAKE_CURRENT_SOURCE_DIR}/${lang_dir}/${additional}"
-                DESTINATION ${install_destin})
+            list(APPEND lang_files_to_install "${CMAKE_CURRENT_SOURCE_DIR}/${lang_dir}/${additional}")
         endforeach()
+
+        # install all these files
+        install(
+            FILES
+                ${lang_files_to_install}
+            DESTINATION ${install_destin})
+
     endforeach()
 
     unset(existing_lang_ts_files)

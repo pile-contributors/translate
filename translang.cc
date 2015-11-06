@@ -11,6 +11,8 @@
 #include "translate.h"
 #include "translate-private.h"
 
+#include <QDir>
+
 /**
  * @class translate
  *
@@ -92,6 +94,21 @@ bool TransLang::isValid () const
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
+QString TransLang::qtLangFile() const
+{
+    if (locale_.isEmpty())
+        return QString();
+    QDir dlang (path_);
+    QString s_qt_name = QString("qt_%1.qm").arg(locale_);
+    if (dlang.exists (s_qt_name)) {
+        return dlang.absoluteFilePath (s_qt_name);
+    } else {
+        return QString();
+    }
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
 QTranslator * TransLang::translator()
 {
     if (transl_ != NULL)
@@ -108,11 +125,31 @@ QTranslator * TransLang::translator()
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
+QTranslator * TransLang::qtTranslator()
+{
+    QString s_file = qtLangFile ();
+
+    qttransl_ = new QTranslator ();
+    if (!qttransl_->load (s_file)) {
+        TRANSLATE_DEBUGM("Failed to load translator from file");
+        delete qttransl_;
+        qttransl_ = NULL;
+    }
+
+    return qttransl_;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
 void TransLang::translatorDone ()
 {
     if (transl_ != NULL) {
         delete transl_;
         transl_ = NULL;
+    }
+    if (qttransl_ != NULL) {
+        delete qttransl_;
+        qttransl_ = NULL;
     }
 }
 /* ========================================================================= */

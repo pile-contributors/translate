@@ -53,6 +53,10 @@ public:
         return langfile_;
     }
 
+    //! Get the absolute path for the qt language file (if any).
+    QString
+    qtLangFile () const;
+
     //! Get the name of this language.
     const QString &
     langName () const {
@@ -77,11 +81,25 @@ public:
         return metadata_;
     }
 
+    bool
+    hasCachedTranslator () const {
+        return transl_ != NULL;
+    }
+
+    bool
+    hasCachedQtTranslator () const {
+        return qttransl_ != NULL;
+    }
+
 protected:
 
     //! Create a Qt translator.
     QTranslator *
     translator ();
+
+    //! Create a Qt translator.
+    QTranslator *
+    qtTranslator ();
 
     //! Discard cached copy of the translator.
     void
@@ -102,6 +120,7 @@ private:
     QString locale_;
     QMap<QString, QString> metadata_;
     QTranslator * transl_;
+    QTranslator * qttransl_;
 };
 
 inline bool operator== (

@@ -74,6 +74,11 @@ public:
     translator (
             int i);
 
+    //! Create a Qt translator.
+    static QTranslator *
+    qtTranslator (
+            int i);
+
     //! Release cached translator.
     static void
     translatorDone (

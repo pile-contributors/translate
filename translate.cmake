@@ -166,7 +166,7 @@ macro (internationalizationDirectory)
     # message(STATUS "---->> TRANSLATION_QM = ${TRANSLATION_QM}")
 
     add_custom_target(
-        translations_update ALL
+        translations_update
         DEPENDS ${lang_qm_files})
 
 

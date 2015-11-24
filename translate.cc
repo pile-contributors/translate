@@ -74,27 +74,42 @@ bool Translate::init (QString * error)
 
         // enter the path
         QDir path (QCoreApplication::applicationDirPath());
-        bool b_cd = path.cd (
+        if (!path.exists(QLatin1String("."))) {
+            TRANSLATE_DEBUGM("Application folder does not exist: %s\n",
+                             TMP_A(path.absolutePath()));
+            break;
+        }
+        TRANSLATE_DEBUGM("Aplication directory is %s\n",
+                         TMP_A(path.absolutePath()));
+
+        QString rel_path =
 #       ifdef TARGET_SYSTEM_APPLE
         "Contents/Resources/translations"
 #       else // TARGET_SYSTEM_APPLE
         QString("../share/locale/%1").arg(QCoreApplication::applicationName().toLower())
 #       endif // TARGET_SYSTEM_APPLE
-        );
+        ;
+        bool b_cd = path.cd (rel_path);
         if (!b_cd || !path.exists(".")) {
             error->append (QObject::tr (
-                               "Could not find translations directory"));
+                               "Could not find translations directory %s\n", TMP_A(rel_path)));
             break;
         }
+        TRANSLATE_DEBUGM("Translations directory is %s\n",
+                         TMP_A(path.absolutePath()));
 
         // get all sub-directories and iterate them
         QStringList dirs = path.entryList (
                     QStringList("*"), QDir::Dirs,
                     QDir::IgnoreCase | QDir::Name);
+        TRANSLATE_DEBUGM("Iterating over %d translations\n", dirs.count());
+
         foreach(const QString & s_dir, dirs) {
+            TRANSLATE_DEBUGM("  - %s\n", TMP_A(s_dir));
+
             QDir subdir (path.absoluteFilePath (s_dir));
             if (!subdir.exists (METADATA_FILE)) {
-                TRANSLATE_DEBUGM("Folder without metadata: %s", TMP_A(s_dir));
+                TRANSLATE_DEBUGM("Folder without metadata: %s\n", TMP_A(s_dir));
                 continue;
             }
 
@@ -117,21 +132,25 @@ bool Translate::init (QString * error)
 
             // a name must be provided or we declare it invalid
             if (s_lbl.isEmpty()) {
-                TRANSLATE_DEBUGM("no name provided in metadata for %s",
+                TRANSLATE_DEBUGM("no name provided in metadata for %s\n",
                                  TMP_A(s_dir));
                 continue;
             }
             // a name must be provided or we declare it invalid
             if (s_lang.isEmpty()) {
-                TRANSLATE_DEBUGM("no language file provided in metadata for %s",
+                TRANSLATE_DEBUGM("no language file provided in metadata for %s\n",
                                  TMP_A(s_dir));
                 continue;
             }
+            TRANSLATE_DEBUGM("    - name: %s\n", TMP_A(s_lbl));
+
             s_lang = subdir.absoluteFilePath (s_lang);
+            TRANSLATE_DEBUGM("    - language path: %s\n", TMP_A(s_lang));
 
             if (!s_icon.isEmpty()) {
                 s_icon = subdir.absoluteFilePath (s_icon);
             }
+            TRANSLATE_DEBUGM("    - icon path: %s\n", TMP_A(s_icon));
 
             // we got ourselves an instance
             TransLang newinst (subdir.absolutePath(),

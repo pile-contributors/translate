@@ -12,7 +12,7 @@
 
 #include <translate/translate-config.h>
 
-#if 0
+#if 1
 #    define TRANSLATE_DEBUGM printf
 #else
 #    define TRANSLATE_DEBUGM black_hole

@@ -115,7 +115,8 @@ QTranslator * TransLang::translator()
         return transl_;
     transl_ = new QTranslator ();
     if (!transl_->load (langfile_)) {
-        TRANSLATE_DEBUGM("Failed to load translator from file");
+        TRANSLATE_DEBUGM("Failed to load translator from file %s\n",
+                         TMP_A(langfile_));
         delete transl_;
         transl_ = NULL;
     }
@@ -131,7 +132,8 @@ QTranslator * TransLang::qtTranslator()
 
     qttransl_ = new QTranslator ();
     if (!qttransl_->load (s_file)) {
-        TRANSLATE_DEBUGM("Failed to load translator from file");
+        TRANSLATE_DEBUGM("Failed to load translator from file %s\n",
+                         TMP_A(s_file));
         delete qttransl_;
         qttransl_ = NULL;
     }

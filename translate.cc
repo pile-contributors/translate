@@ -105,6 +105,11 @@ bool Translate::init (QString * error)
         TRANSLATE_DEBUGM("Iterating over %d translations\n", dirs.count());
 
         foreach(const QString & s_dir, dirs) {
+            if (!s_dir.compare (QLatin1String (".")))
+                continue;
+            if (!s_dir.compare (QLatin1String ("..")))
+                continue;
+
             TRANSLATE_DEBUGM("  - %s\n", TMP_A(s_dir));
 
             QDir subdir (path.absoluteFilePath (s_dir));

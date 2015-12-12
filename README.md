@@ -52,7 +52,7 @@ must be unique across all language files.
 language directory. The list should be separated by semicolons (;).
 
 The CMake script creates an additional target called
-`translations_update` that is always builded.
+`translate` that is always builded.
 
 Files are installed in either
 `${PROJECT_NAME}.app/Contents/Resources/translations/${lang}` for MacOs

@@ -1,6 +1,6 @@
 
 # enable/disable cmake debug messages related to this pile
-set (TRANSLATE_DEBUG_MSG ON)
+set (TRANSLATE_DEBUG_MSG OFF)
 
 # make sure support code is present; no harm
 # in including it twice; the user, however, should have used
@@ -148,7 +148,8 @@ macro (internationalizationDirectory)
         install(
             FILES
                 ${lang_files_to_install}
-            DESTINATION ${install_destin})
+            DESTINATION ${install_destin}
+            COMPONENT languages)
 
     endforeach()
 

@@ -31,7 +31,8 @@ TransLang::TransLang() :
     icon_("/\\invalid instance;:"),
     locale_(),
     metadata_(),
-    transl_(NULL)
+    transl_(NULL),
+    qttransl_(NULL)
 {
     TRANSLATE_TRACE_ENTRY;
 
@@ -52,7 +53,8 @@ TransLang::TransLang (
     icon_(icon),
     locale_(locale),
     metadata_(),
-    transl_(NULL)
+    transl_(NULL),
+    qttransl_(NULL)
 {
    TRANSLATE_TRACE_ENTRY;
 
@@ -156,4 +158,4 @@ void TransLang::translatorDone ()
 }
 /* ========================================================================= */
 
-
+void TransLang::anchorVtable() const {}

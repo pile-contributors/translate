@@ -23,7 +23,7 @@ class TRANSLATE_EXPORT TransLang {
 public:
 
     //! Constructor that creates a valid instance.
-    TransLang (
+    explicit TransLang (
             const QString & dir,
             const QString & langfile,
             const QString & name,
@@ -36,6 +36,18 @@ public:
     //! Destructor.
     virtual ~TransLang();
 
+    //! assignment operator
+    TransLang& operator=( const TransLang& other) {
+        path_ = other.path_;
+        langfile_ = other.langfile_;
+        name_ = other.name_;
+        icon_ = other.icon_;
+        locale_ = other.locale_;
+        metadata_ = other.metadata_;
+        transl_ = other.transl_;
+        qttransl_ = other.qttransl_;
+        return *this;
+    }
 
     //! Tell if this instance is valid or not.
     bool
@@ -121,6 +133,8 @@ private:
     QMap<QString, QString> metadata_;
     QTranslator * transl_;
     QTranslator * qttransl_;
+
+public: virtual void anchorVtable() const;
 };
 
 inline bool operator== (

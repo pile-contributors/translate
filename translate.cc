@@ -36,7 +36,9 @@ static TransLang invalid;
 /**
  * ...
  */
-Translate::Translate()
+Translate::Translate() :
+    d_ (),
+    current_ (-1)
 {
     TRANSLATE_TRACE_ENTRY;
 

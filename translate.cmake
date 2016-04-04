@@ -24,6 +24,10 @@ macro    (translateInit
         "translang.cc"
         "translate.cc")
 
+    set(TRANSLATE_QT_MODS
+        "Core"
+        )
+
     pileSetSources(
         "${TRANSLATE_INIT_NAME}"
         "${TRANSLATE_HEADERS}"

@@ -14,9 +14,8 @@
 #include <QDir>
 
 /**
- * @class translate
+ * @class TransLang
  *
- * Detailed description.
  */
 
 /* ------------------------------------------------------------------------- */

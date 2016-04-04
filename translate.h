@@ -14,7 +14,7 @@
 #include <translate/translang.h>
 #include <QVector>
 
-//! brief description
+//! Translation management class.
 class TRANSLATE_EXPORT Translate {
 
 private:
@@ -33,7 +33,7 @@ public:
             QString * error);
 
     //! Terminate the manager.
-    static void
+  w  static void
     end ();
 
     //! Get the number of languages we know about.

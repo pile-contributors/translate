@@ -15,7 +15,7 @@
 #include <QMap>
 #include <QTranslator>
 
-//! brief description
+//! One language provided by the translator.
 class TRANSLATE_EXPORT TransLang {
 
     friend class Translate;

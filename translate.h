@@ -33,7 +33,7 @@ public:
             QString * error);
 
     //! Terminate the manager.
-  w  static void
+    static void
     end ();
 
     //! Get the number of languages we know about.

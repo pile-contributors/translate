@@ -75,7 +75,13 @@ bool Translate::init (QString * error)
         }
 
         // enter the path
-        QDir path (QCoreApplication::applicationDirPath());
+        QDir path;
+        if (QCoreApplication::instance() == NULL) {
+            path = QDir::currentPath ();
+        } else {
+            path = QCoreApplication::applicationDirPath ();
+        }
+
         if (!path.exists(QLatin1String("."))) {
             TRANSLATE_DEBUGM("Application folder does not exist: %s\n",
                              TMP_A(path.absolutePath()));
@@ -94,7 +100,8 @@ bool Translate::init (QString * error)
         bool b_cd = path.cd (rel_path);
         if (!b_cd || !path.exists(".")) {
             error->append (QObject::tr (
-                               "Could not find translations directory %s\n", TMP_A(rel_path)));
+                               "Could not find translations directory %1\n").arg (
+                                   TMP_A(rel_path)));
             break;
         }
         TRANSLATE_DEBUGM("Translations directory is %s\n",

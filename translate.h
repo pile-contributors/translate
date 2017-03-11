@@ -30,6 +30,7 @@ public:
     //! Initialize the manager.
     static bool
     init (
+            const char *env_var_path,
             QString * error);
 
     //! Terminate the manager.

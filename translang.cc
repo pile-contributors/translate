@@ -99,12 +99,18 @@ QString TransLang::qtLangFile() const
 {
     if (locale_.isEmpty())
         return QString();
+
     QDir dlang (path_);
     QString s_qt_name = QString("qt_%1.qm").arg(locale_);
     if (dlang.exists (s_qt_name)) {
         return dlang.absoluteFilePath (s_qt_name);
     } else {
-        return QString();
+        dlang.setPath (QString::fromUtf8 (getenv ("TRANSLATE_QT_DIR")));
+        if (dlang.exists (s_qt_name)) {
+            return dlang.absoluteFilePath (s_qt_name);
+        } else {
+            return QString();
+        }
     }
 }
 /* ========================================================================= */

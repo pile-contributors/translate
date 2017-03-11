@@ -15,6 +15,8 @@
 #include <QObject>
 #include <QSettings>
 #include <QLocale>
+#include <QDebug>
+#include <QProcess>
 
 /**
  * @class Translate
@@ -57,12 +59,12 @@ Translate::~Translate()
     TRANSLATE_TRACE_EXIT;
 }
 /* ========================================================================= */
-#include <QDebug>
+
 /* ------------------------------------------------------------------------- */
 /**
  * ...
  */
-bool Translate::init (QString * error)
+bool Translate::init (const char * env_var_path, QString * error)
 {
     bool b_ret = false;
     TRANSLATE_TRACE_ENTRY;
@@ -76,33 +78,41 @@ bool Translate::init (QString * error)
 
         // enter the path
         QDir path;
-        if (QCoreApplication::instance() == NULL) {
-            path = QDir::currentPath ();
+        QString env_lang;
+        if (env_var_path != NULL) {
+            env_lang = QString::fromUtf8 (getenv (env_var_path)).trimmed ();
+        }
+        if (!env_lang.isEmpty() && QFileInfo(env_lang).isDir()) {
+            path = QDir (env_lang);
         } else {
-            path = QCoreApplication::applicationDirPath ();
-        }
+            if (QCoreApplication::instance() == NULL) {
+                path = QDir::currentPath ();
+            } else {
+                path = QCoreApplication::applicationDirPath ();
+            }
 
-        if (!path.exists(QLatin1String("."))) {
-            TRANSLATE_DEBUGM("Application folder does not exist: %s\n",
+            if (!path.exists(QLatin1String("."))) {
+                TRANSLATE_DEBUGM("Application folder does not exist: %s\n",
+                                 TMP_A(path.absolutePath()));
+                break;
+            }
+            TRANSLATE_DEBUGM("Aplication directory is %s\n",
                              TMP_A(path.absolutePath()));
-            break;
-        }
-        TRANSLATE_DEBUGM("Aplication directory is %s\n",
-                         TMP_A(path.absolutePath()));
 
-        QString rel_path =
-#       ifdef TARGET_SYSTEM_APPLE
-        "Contents/Resources/translations"
-#       else // TARGET_SYSTEM_APPLE
-        QString("../share/locale/%1").arg(QCoreApplication::applicationName().toLower())
-#       endif // TARGET_SYSTEM_APPLE
-        ;
-        bool b_cd = path.cd (rel_path);
-        if (!b_cd || !path.exists(".")) {
-            error->append (QObject::tr (
-                               "Could not find translations directory %1\n").arg (
-                                   TMP_A(rel_path)));
-            break;
+            QString rel_path =
+    #       ifdef TARGET_SYSTEM_APPLE
+            "Contents/Resources/translations"
+    #       else // TARGET_SYSTEM_APPLE
+            QString("../share/locale/%1").arg(QCoreApplication::applicationName().toLower())
+    #       endif // TARGET_SYSTEM_APPLE
+            ;
+            bool b_cd = path.cd (rel_path);
+            if (!b_cd || !path.exists(".")) {
+                error->append (QObject::tr (
+                                   "Could not find translations directory %1\n").arg (
+                                       TMP_A(rel_path)));
+                break;
+            }
         }
         TRANSLATE_DEBUGM("Translations directory is %s\n",
                          TMP_A(path.absolutePath()));
@@ -150,7 +160,7 @@ bool Translate::init (QString * error)
                                  TMP_A(s_dir));
                 continue;
             }
-            // a name must be provided or we declare it invalid
+            // a language must be provided or we declare it invalid
             if (s_lang.isEmpty()) {
                 TRANSLATE_DEBUGM("no language file provided in metadata for %s\n",
                                  TMP_A(s_dir));
@@ -158,7 +168,27 @@ bool Translate::init (QString * error)
             }
             TRANSLATE_DEBUGM("    - name: %s\n", TMP_A(s_lbl));
 
-            s_lang = subdir.absoluteFilePath (s_lang);
+            QString s_lang_full = subdir.absoluteFilePath (s_lang);
+
+            // If the file does not exist in asigned directory we make an
+            // attempt to locate it in a specially provided one.
+            QFileInfo fi_lang (s_lang);
+            if (!fi_lang.isFile()) {
+                QString s_lang_ext (s_lang + ".qm");
+                fi_lang.setFile (s_lang_ext );
+                if (!fi_lang.isFile()) {
+                    QString s_alternative_path =
+                            QString::fromUtf8 (getenv ("TRANSLATE_QM_DIR")).trimmed ();
+                    QDir alternative_path (s_alternative_path);
+                    if (
+                            alternative_path.exists (s_lang) ||
+                            alternative_path.exists (s_lang_ext)) {
+
+                        s_lang_full = alternative_path.absoluteFilePath (s_lang);
+                    }
+                }
+            }
+            s_lang = s_lang_full;
             TRANSLATE_DEBUGM("    - language path: %s\n", TMP_A(s_lang));
 
             if (!s_icon.isEmpty()) {

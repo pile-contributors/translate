@@ -11,6 +11,18 @@ include(pile_support)
 macro    (translateInit
           ref_cnt_use_mode)
 
+
+    find_path(SQLITE3_INCLUDE_DIR
+        NAMES sqlite3.h
+        PREFIX sqlite
+        HINTS ${SQLITE3_INCLUDE_DIR})
+    # message(STATUS "SQLITE3_INCLUDE_DIR = ${SQLITE3_INCLUDE_DIR}")
+    if (SQLITE3_INCLUDE_DIR)
+        set (SQLITE3_FOUND ON)
+    else()
+        set (SQLITE3_FOUND OFF)
+    endif()
+
     # default name
     if (NOT TRANSLATE_INIT_NAME)
         set(TRANSLATE_INIT_NAME "translate")
@@ -21,6 +33,7 @@ macro    (translateInit
         "translang.h"
         "translate.h")
     set(TRANSLATE_SOURCES
+        "translate_sqlite.cc"
         "translang.cc"
         "translate.cc")
 

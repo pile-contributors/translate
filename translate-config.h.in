@@ -91,6 +91,12 @@
  */
 #cmakedefine TRANSLATE_PILE
 
+/**
+ * @def SQLITE3_FOUND
+ * @brief If defined it indicates that we have sqlite3 support
+ */
+#cmakedefine SQLITE3_FOUND
+
 
 /**
  * @def TRANSLATE_SHARED

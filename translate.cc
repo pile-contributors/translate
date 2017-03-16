@@ -18,6 +18,10 @@
 #include <QDebug>
 #include <QProcess>
 
+#ifdef SQLITE3_FOUND
+#   include <sqlite/sqlite3.h>
+#endif // SQLITE3_FOUND
+
 /**
  * @class Translate
  *
@@ -377,5 +381,21 @@ void Translate::setCurrent (int value)
     } else {
         uniq_->current_ = value;
     }
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+bool Translate::sqliteAutoregister()
+{
+    bool b_ret = false;
+# ifdef SQLITE3_FOUND
+    int rc = sqlite3_auto_extension (getSqliteEntryPoint ());
+    b_ret = (rc == SQLITE_OK);
+#   else
+    qCritical() << "sqlite-related functionality in translate pile "
+                   "is disabled because sqlite3 "
+                   "was not found at compile time";
+# endif // SQLITE3_FOUND
+    return b_ret;
 }
 /* ========================================================================= */

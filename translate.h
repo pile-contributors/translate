@@ -17,6 +17,12 @@
 //! Translation management class.
 class TRANSLATE_EXPORT Translate {
 
+public:
+
+    //! Describes the entry point for sqlite.
+    typedef void(*SqliteEntryPoint)(void);
+
+
 private:
 
     //! Default constructor.
@@ -92,6 +98,15 @@ public:
     //! Set the index of current translator.
     static void
     setCurrent (int value);
+
+    //! The entry point for the sqlite3.
+    static SqliteEntryPoint
+    getSqliteEntryPoint ();
+
+    //! Autoregister this extension with each new database
+    //! (when not using the plugin).
+    static bool
+    sqliteAutoregister ();
 
 protected:
 

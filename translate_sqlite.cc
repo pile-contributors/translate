@@ -54,7 +54,7 @@ static void epoint_tr (
 
         QString result = QCoreApplication::translate (
                     "sqlite", (const char *)sqlite3_value_text(argv[0]));
-        sqlite3_result_blob(
+        sqlite3_result_text (
                     context, result.toUtf8().constData(), -1, SQLITE_TRANSIENT);
 
         b_ret = true;
